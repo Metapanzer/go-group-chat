@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"sync"
 
 	"github.com/gorilla/websocket"
 )
@@ -15,6 +16,8 @@ var upgrader = websocket.Upgrader{
 
 var clients = make(map[*websocket.Conn]bool)
 var broadcast = make(chan Message)
+var history []Message
+var mutex sync.Mutex
 
 type Message struct {
 	Username string `json:"username"`
@@ -46,6 +49,16 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.Close()
 
+	mutex.Lock()
+	for _, msg := range history {
+		err := conn.WriteJSON(msg)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+	}
+	mutex.Unlock()
+
 	clients[conn] = true
 
 	for {
@@ -64,6 +77,10 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 func handleMessages() {
 	for {
 		msg := <-broadcast
+
+		mutex.Lock()
+		history = append(history, msg)
+		mutex.Unlock()
 
 		for client := range clients {
 			err := client.WriteJSON(msg)
