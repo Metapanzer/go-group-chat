@@ -12,11 +12,17 @@
       <form id="form">
         <input
           type="text"
-          id="messageInput"
-          placeholder="Type your message..."
+          id="usernameInput"
+          placeholder="Enter username to send message"
           required
         />
-        <button type="button" id="sendButton" onclick="sendMessage()">
+        <input
+          type="text"
+          id="messageInput"
+          placeholder="Type your message..."
+          disabled
+        />
+        <button type="button" id="sendButton" onclick="sendMessage()" disabled>
           Send
         </button>
       </form>
@@ -26,13 +32,22 @@
       const socket = new WebSocket("ws://localhost:8080/ws");
       const chatDiv = document.getElementById("chat");
       const form = document.getElementById("form");
+      const usernameInput = document.getElementById("usernameInput");
       const messageInput = document.getElementById("messageInput");
+      const sendButton = document.getElementById("sendButton");
 
-      let username = prompt("Enter your username:");
+      let username = "";
 
-      if (!username) {
-        username = "Anonymous";
-      }
+      usernameInput.addEventListener("input", function () {
+        username = usernameInput.value;
+        if (username.trim() !== "") {
+          messageInput.disabled = false;
+          sendButton.disabled = false;
+        } else {
+          messageInput.disabled = true;
+          sendButton.disabled = true;
+        }
+      });
 
       socket.onmessage = function (event) {
         const data = JSON.parse(event.data);

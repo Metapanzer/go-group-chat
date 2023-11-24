@@ -26,15 +26,16 @@ body {
 
 #form {
   display: flex;
+  flex-direction: column;
   padding: 10px;
 }
 
+#usernameInput,
 #messageInput {
-  flex: 1;
   padding: 8px;
   border: 1px solid #ccc;
   border-radius: 4px;
-  margin-right: 8px;
+  margin-bottom: 8px;
 }
 
 #sendButton {
