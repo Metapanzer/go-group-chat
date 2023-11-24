@@ -11,7 +11,8 @@ body {
 }
 
 #chat-container {
-  width: 300px;
+  width: 80%;
+  max-width: 400px;
   background-color: #fff;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
@@ -20,7 +21,7 @@ body {
 
 #chat {
   height: 300px;
-  overflow-y: scroll;
+  overflow-y: auto;
   padding: 10px;
 }
 
@@ -30,8 +31,34 @@ body {
   padding: 10px;
 }
 
-#usernameInput,
-#messageInput {
+#username-container {
+  display: flex;
+  margin-bottom: 8px;
+}
+
+#usernameInput {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+#confirmEditButton {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  margin-left: 8px;
+  cursor: pointer;
+}
+
+#confirmEditButton:hover {
+  background-color: #45a049;
+}
+
+#messageInput,
+#sendButton {
   padding: 8px;
   border: 1px solid #ccc;
   border-radius: 4px;

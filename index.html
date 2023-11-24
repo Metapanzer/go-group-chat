@@ -10,12 +10,20 @@
     <div id="chat-container">
       <div id="chat"></div>
       <form id="form">
-        <input
-          type="text"
-          id="usernameInput"
-          placeholder="Enter username to send message"
-          required
-        />
+        <div id="username-container">
+          <input
+            type="text"
+            id="usernameInput"
+            placeholder="Enter your username"
+          />
+          <button
+            type="button"
+            id="confirmEditButton"
+            onclick="confirmEditUsername()"
+          >
+            Confirm
+          </button>
+        </div>
         <input
           type="text"
           id="messageInput"
@@ -32,22 +40,36 @@
       const socket = new WebSocket("ws://localhost:8080/ws");
       const chatDiv = document.getElementById("chat");
       const form = document.getElementById("form");
+      const usernameContainer = document.getElementById("username-container");
       const usernameInput = document.getElementById("usernameInput");
+      const confirmEditButton = document.getElementById("confirmEditButton");
       const messageInput = document.getElementById("messageInput");
       const sendButton = document.getElementById("sendButton");
 
       let username = "";
+      let usernameConfirmed = false;
 
-      usernameInput.addEventListener("input", function () {
-        username = usernameInput.value;
-        if (username.trim() !== "") {
-          messageInput.disabled = false;
-          sendButton.disabled = false;
-        } else {
-          messageInput.disabled = true;
-          sendButton.disabled = true;
+      function confirmEditUsername() {
+        const inputUsername = usernameInput.value.trim();
+        if (inputUsername !== "") {
+          username = inputUsername;
+          if (usernameConfirmed) {
+            // If username is already confirmed, toggle to edit mode
+            usernameInput.disabled = false;
+            confirmEditButton.textContent = "Confirm";
+            usernameConfirmed = false;
+            messageInput.disabled = true;
+            sendButton.disabled = true;
+          } else {
+            // If username is not confirmed, confirm the username
+            usernameInput.disabled = true;
+            confirmEditButton.textContent = "Edit";
+            usernameConfirmed = true;
+            messageInput.disabled = false;
+            sendButton.disabled = false;
+          }
         }
-      });
+      }
 
       socket.onmessage = function (event) {
         const data = JSON.parse(event.data);
@@ -71,7 +93,11 @@
         const p = document.createElement("p");
         p.innerHTML = `<strong>${username}:</strong> ${message}`;
         chatDiv.appendChild(p);
-        chatDiv.scrollTop = chatDiv.scrollHeight;
+
+        // Scroll to the bottom if overflowed
+        if (chatDiv.scrollHeight > chatDiv.clientHeight) {
+          chatDiv.scrollTop = chatDiv.scrollHeight - chatDiv.clientHeight;
+        }
       }
     </script>
   </body>
