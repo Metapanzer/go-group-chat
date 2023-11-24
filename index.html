@@ -71,7 +71,13 @@
         }
       }
 
-      socket.onmessage = function (event) {
+      socket.onopen = () => {
+        console.log("Connected to websocket server");
+      };
+      socket.onclose = (event) => {
+        console.log("Disconnected from the websocket server: " + event.reason);
+      };
+      socket.onmessage = (event) => {
         const data = JSON.parse(event.data);
         appendMessage(data.username, data.message);
       };
